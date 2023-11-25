@@ -1,32 +1,35 @@
-function luckyDraw(player) {
-  return new Promise((resolve, reject) => {
-    const win = Boolean(Math.round(Math.random()));
+const { EventEmitter } = require("node:events");
 
-    process.nextTick(() => {
-      if (win) {
-        resolve(`${player} won a prize in the draw!`);
-      } else {
-        reject(new Error(`${player} lost the draw.`));
-      }
-    });
-  });
+function createNewsFeed() {
+  const emitter = new EventEmitter();
+
+  setInterval(() => {
+    emitter.emit("newsEvent", "News: A thing happened in a place.");
+  }, 1000);
+
+  setInterval(() => {
+    emitter.emit("breakingNews", "Breaking news! A BIG thing happened.");
+  }, 4000);
+
+  setTimeout(() => {
+    emitter.emit("error", new Error("News feed connection error"));
+  }, 5000);
+
+  return emitter;
 }
+const newsFeed = createNewsFeed();
 
-function playLuckyDraw(player) {
-  return luckyDraw(player)
-    .then((result) => {
-      console.log(result);
-      return result;
-    })
-    .catch((error) => {
-      console.error(error.message);
-      throw error;
-    });
-}
 
-playLuckyDraw("Joe")
-  .then(() => playLuckyDraw("Caroline"))
-  .then(() => playLuckyDraw("Sabrina"))
-  .catch((error) => {
-    console.error("Error Promise", error.message);
-  });
+newsFeed.on("newsEvent", (data) => {
+  console.log("News Event:", data);
+});
+
+
+newsFeed.on("breakingNews", (data) => {
+  console.log("Breaking News Event:", data);
+});
+
+
+newsFeed.on("error", (error) => {
+  console.error("Error Event:", error.message);
+});
