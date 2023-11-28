@@ -1,35 +1,30 @@
-const { EventEmitter } = require("node:events");
+import express from "express";
+import dotenv from "dotenv";
+import morgan from "morgan";
 
-function createNewsFeed() {
-  const emitter = new EventEmitter();
+dotenv.config();
+const app = express();
 
-  setInterval(() => {
-    emitter.emit("newsEvent", "News: A thing happened in a place.");
-  }, 1000);
+const { SERVER_PORT } = process.env;
 
-  setInterval(() => {
-    emitter.emit("breakingNews", "Breaking news! A BIG thing happened.");
-  }, 4000);
+app.use(morgan("dev"));
 
-  setTimeout(() => {
-    emitter.emit("error", new Error("News feed connection error"));
-  }, 5000);
+let planets = [
+  {
+    id: 1,
+    name: 'Earth',
+  },
+  {
+    id: 2,
+    name: 'Mars',
+  },
+];
 
-  return emitter;
-}
-const newsFeed = createNewsFeed();
 
-
-newsFeed.on("newsEvent", (data) => {
-  console.log("News Event:", data);
+app.get('/planets', (_, res) => {
+  res.status(200).json(planets);
 });
 
-
-newsFeed.on("breakingNews", (data) => {
-  console.log("Breaking News Event:", data);
-});
-
-
-newsFeed.on("error", (error) => {
-  console.error("Error Event:", error.message);
+app.listen(SERVER_PORT, () => {
+  console.log(`Server up and running in port ${SERVER_PORT}`);
 });
