@@ -2,7 +2,11 @@ import { Request, Response } from "express";
 import pgPromise from "pg-promise";
 import Joi from "joi";
 
+
 const db = pgPromise()("postgres://postgres:postgres@localhost:5432/postgres")
+
+
+
 
 
 const setupDb = async () => {
@@ -11,7 +15,8 @@ const setupDb = async () => {
 
     CREATE TABLE planets (
       id SERIAL NOT NULL PRIMARY KEY,
-      name TEXT NOT NULL
+      name TEXT NOT NULL,
+      image TEXT
     )
   `)
 
@@ -90,4 +95,16 @@ type Planet = {
     res.status(200).json({ msg:"The planet was deleted" })
   };
 
-  export {getAll, getById, create, updateById, deleteById}
+  const createImage = (req: Request, res: Response) => {
+    console.log(req.file)
+    const { id } = req.params
+    const fileName = req.file?.path
+    if(fileName){
+      db.none(`UPDATE planets SET image=$2 WHERE id=$1`, [id, fileName])
+      res.status(200).json({ msg:"The image was uploated" })
+    }else {
+      res.status(400).json({ msg:"Failed upload image" })
+    }
+  }
+
+  export { getAll, getById, create, updateById, deleteById, createImage }
