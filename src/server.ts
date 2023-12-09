@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import {getAll, getById, create, updateById, deleteById} from "./controller/planets.js"
 
+
 dotenv.config();
 const app = express();
 
