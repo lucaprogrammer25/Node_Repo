@@ -4,7 +4,8 @@ import morgan from "morgan";
 import multer from "multer"
 
 import {getAll, getById, create, updateById, deleteById, createImage} from "./controller/planets.js"
-import { logIn, signUp } from "./controller/users.js";
+import { logIn, logOut, signUp } from "./controller/users.js";
+import authorize from "./authorize.js"
 
 
 const storage = multer.diskStorage({
@@ -44,6 +45,8 @@ app.post('/planets/:id/image', upload.single("image"), createImage)
 app.post('/users/login', logIn)
 
 app.post('/users/signup', signUp)
+
+app.post('/users/logout', authorize, logOut)
 
 app.listen(SERVER_PORT, () => {
   console.log(`Server up and running in port ${SERVER_PORT}`);
